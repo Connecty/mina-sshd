@@ -552,6 +552,9 @@ public class SftpSubsystem implements Command, Runnable, SessionAware, FileSyste
                             if (((pflags & SSH_FXF_CREAT) != 0) && ((pflags & SSH_FXF_EXCL) != 0)) {
                                 sendStatus(id, SSH_FX_FILE_ALREADY_EXISTS, path);
                                 return;
+                            } else if (((pflags & SSH_FXF_READ) != 0) && (!file.isReadable())) {
+                                sendStatus(id, SSH_FX_PERMISSION_DENIED, path);
+                                return;
                             }
                         } else {
                             if (((pflags & SSH_FXF_CREAT) != 0)) {
@@ -609,6 +612,9 @@ public class SftpSubsystem implements Command, Runnable, SessionAware, FileSyste
                                         sendStatus(id, SSH_FX_NO_SUCH_FILE, path);
                                     }
                                     return;
+                                } else if (!file.isReadable()) {
+                                  sendStatus(id, SSH_FX_PERMISSION_DENIED, path);
+                                  return;
                                 }
                                 break;
                             }
