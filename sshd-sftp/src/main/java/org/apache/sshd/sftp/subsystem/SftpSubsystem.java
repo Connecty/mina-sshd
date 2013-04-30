@@ -541,6 +541,8 @@ public class SftpSubsystem implements Command, SessionAware, FileSystemAware, Sf
             if (file.doesExist()) {
                 if (((flags & SSH_FXF_CREAT) != 0) && ((flags & SSH_FXF_EXCL) != 0)) {
                     return new SshFxpStatusReply(id, SSH_FX_FILE_ALREADY_EXISTS, path);
+                } else if (((flags & SSH_FXF_READ) != 0) && (!file.isReadable())) {
+                    return new SshFxpStatusReply(id, SSH_FX_PERMISSION_DENIED, path);
                 }
             } else {
                 if ((flags & SSH_FXF_CREAT) != 0) {
@@ -586,6 +588,8 @@ public class SftpSubsystem implements Command, SessionAware, FileSystemAware, Sf
                         } else {
                             return new SshFxpStatusReply(id, SSH_FX_NO_SUCH_FILE, path);
                         }
+                    } else if (!file.isReadable()) {
+                        return new SshFxpStatusReply(id, SSH_FX_PERMISSION_DENIED, path);
                     }
                     break;
                 }
